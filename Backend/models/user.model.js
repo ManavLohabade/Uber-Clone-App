@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const brcypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
@@ -8,45 +8,43 @@ const userSchema = new mongoose.Schema({
         firstname: {
             type: String,
             required: true,
-            minlength: [3, 'First name must be at least 3 characters long'],
+            minlength: [ 3, 'First name must be at least 3 characters long' ],
         },
-
         lastname: {
             type: String,
-            minlength: [3, 'Last name must be at least 3 characters long'],
-        },
-},
+            minlength: [ 3, 'Last name must be at least 3 characters long' ],
+        }
+    },
     email: {
         type: String,
         required: true,
         unique: true,
-        minlength: [5, 'Email must be at least 6 characters long'],
-
+        minlength: [ 5, 'Email must be at least 5 characters long' ],
     },
     password: {
         type: String,
-        required: true,  
+        required: true,
         select: false,
     },
-    
-    socketID: { 
+    socketId: {
         type: String,
     },
 })
 
-userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({_id: this._id}, process.env.JWT_SECRET);
+userSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
     return token;
 }
 
-userSchema.methods.comparePassword = async function(enteredPassword) {
-    return await brcypt.compare(Password, this.password);
+userSchema.methods.comparePassword = async function (password) {
+    return await bcrypt.compare(password, this.password);
 }
 
-userSchema.statics.hashPassword = async function(password) {
-    return await brcypt.hash(password, 10);
+userSchema.statics.hashPassword = async function (password) {
+    return await bcrypt.hash(password, 10);
 }
 
-const User = mongoose.model('User', userSchema);
+const userModel = mongoose.model('user', userSchema);
+
 
 module.exports = userModel;
